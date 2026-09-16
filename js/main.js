@@ -193,6 +193,11 @@
           <p class="eyebrow">${esc(v.label)}</p>
           <h3>${esc(v.name)}</h3>
           ${isReal(v.address) ? `<p class="venue__address">${esc(v.address)}</p>` : ""}
+          ${isReal(v.plusCode) ? `<p class="venue__code">
+            <span class="venue__code-label">Plus code</span>
+            <span class="venue__code-value">${esc(v.plusCode.split(",")[0])}</span>
+            <button class="copy" type="button" data-copy="${esc(v.plusCode)}" aria-label="Copy plus code">${I.copy}${I.check}<span class="copy__label">Copy</span></button>
+          </p>` : ""}
           <a class="btn btn--solid" href="${esc(venueMap(v))}" target="_blank" rel="noopener">${I.pin} View on Google Maps</a>
         </div>
       </article>`;

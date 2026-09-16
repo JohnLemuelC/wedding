@@ -48,8 +48,9 @@ window.WEDDING = {
       label: "Ceremony & Reception",
       name: "KVN Resort",
       address: "Mamarlao, San Carlos City, Pangasinan",
-      mapUrl: "https://maps.app.goo.gl/Te1nAJdtXcPQL9EcA",
-      coordinates: "15.928184,120.331205"
+      plusCode: "W8HJ+5FV, San Carlos City, Pangasinan",
+      mapUrl: "https://www.google.com/maps/search/?api=1&query=W8HJ%2B5FV%2C%20San%20Carlos%20City%2C%20Pangasinan",
+      coordinates: "15.927988,120.331172"
     }
   ],
 
@@ -160,7 +161,7 @@ window.WEDDING = {
   // {deadline} becomes the RSVP deadline. Questions answered with [Answer] stay hidden.
   faq: [
     { q: "What time should I arrive?", a: "The ceremony starts at 2:00 PM, so please arrive a little before then." },
-    { q: "Where is the wedding?", a: "At KVN Resort in Mamarlao, San Carlos City, Pangasinan. There's a map in the How to Get There section." },
+    { q: "Where is the wedding?", a: "At KVN Resort in Mamarlao, San Carlos City, Pangasinan (plus code W8HJ+5FV). There's a map in the How to Get There section." },
     { q: "What should I wear?", a: "Formal attire in burgundy or beige. Please skip very short skirts or dresses and go for something elegant and modest." },
     { q: "What gift can we give?", a: "Having you there is already the greatest gift. If you'd like to give something, we'd be grateful for a monetary gift instead of a physical one. Our QR codes are in the Preferred Gift section." },
     { q: "When do I need to RSVP by?", a: "Please RSVP by {deadline}. Just text or call Nicole D. at 0945 861 2234." },
