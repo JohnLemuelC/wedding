@@ -328,10 +328,14 @@
     <section class="section gifts" id="gifts">
       <div class="container">
         <header class="section__head section__head--tight">
-          <p class="eyebrow" data-reveal>A little note about</p>
+          <p class="eyebrow" data-reveal data-bind="giftsEyebrow"></p>
           <h2 class="section__title" data-split>Gifts</h2>
         </header>
         <div class="gifts__intro" id="gifts-intro" data-reveal></div>
+        <p class="gifts__how" data-reveal>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>
+          <span data-bind="giftsHowTo"></span>
+        </p>
         <div class="gift-list" id="gift-list"></div>
       </div>
     </section>

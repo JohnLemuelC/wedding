@@ -59,7 +59,8 @@
     messenger: `<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3C7 3 3 6.7 3 11.3c0 2.6 1.3 4.9 3.3 6.4V21l3-1.7c.9.3 1.8.4 2.7.4 5 0 9-3.7 9-8.4S17 3 12 3z"/><path d="M7.5 13.5l3-3 2.5 2 3.5-3"/></svg>`,
     camera: `<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h2.5L9 4h6l1.5 2H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>`,
     copy: `<svg class="i i--copy" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg>`,
-    check: `<svg class="i i--check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`
+    check: `<svg class="i i--check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`,
+    download: `<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>`
   };
 
   const monogramHTML = () => (isReal(C.couple.monogram) ? esc(C.couple.monogram) : HEART);
@@ -111,6 +112,8 @@
       rsvpNote: C.rsvp.note,
       rsvpName: C.rsvp.contact ? C.rsvp.contact.name : "",
       rsvpPhone: C.rsvp.contact ? formatPhone(C.rsvp.contact.phone) : "",
+      giftsEyebrow: C.gifts.eyebrow,
+      giftsHowTo: C.gifts.howTo,
       shareLead: C.sharePhotos.lead,
       shareText: C.sharePhotos.text,
       shareNote: C.sharePhotos.note,
@@ -222,16 +225,20 @@
       .filter((g) => g.details.length || isReal(g.qr));
     if (!gifts.length) hideSection("gifts");
     $("#gifts-intro").innerHTML = C.gifts.intro.map((p) => `<p>${esc(p)}</p>`).join("");
-    $("#gift-list").innerHTML = gifts.map((g) => `
-      <article class="gift" data-reveal="up">
-        <div class="gift__head"><span class="gift__icon">${ICONS.gift}</span><h3>${esc(g.label)}</h3></div>
-        <dl class="gift__details">${g.details.map((d) => `
+    $("#gift-list").innerHTML = gifts.map((g) => {
+      const file = isReal(g.download) ? g.download : g.qr;
+      const saveAs = `Nicole-and-Lemuel-${g.label.replace(/\s+/g, "-")}-QR.${String(file).split(".").pop()}`;
+      return `<article class="gift" data-reveal="up">
+        <h3 class="gift__label">${esc(g.label)}</h3>
+        ${isReal(g.qr) ? `<div class="gift__qr"><img src="${esc(g.qr)}" alt="${esc(g.label)} QR code" width="640" height="640" loading="lazy"></div>` : ""}
+        ${g.details.length ? `<dl class="gift__details">${g.details.map((d) => `
           <div class="gift__row">
             <dt>${esc(d.key)}</dt>
             <dd><span>${esc(d.value)}</span>${d.copy ? `<button class="copy" type="button" data-copy="${esc(d.value)}" aria-label="Copy ${esc(d.key)}">${I.copy}${I.check}<span class="copy__label">Copy</span></button>` : ""}</dd>
-          </div>`).join("")}</dl>
-        ${isReal(g.qr) ? `<img class="gift__qr" src="${esc(g.qr)}" alt="${esc(g.label)} QR code" loading="lazy">` : ""}
-      </article>`).join("");
+          </div>`).join("")}</dl>` : ""}
+        ${isReal(file) ? `<a class="btn btn--ghost btn--sm gift__save" href="${esc(file)}" download="${esc(saveAs)}">${I.download} Save QR</a>` : ""}
+      </article>`;
+    }).join("");
 
     // Contact
     const people = C.contact.people.filter((p) => isReal(p.name) && isReal(p.phone));

@@ -32,6 +32,10 @@ The link preview on Messenger comes from the `og:` tags at the top of `index.htm
 1. Put the image in `photos` (around 1800px on the long side) and a smaller copy in `photos/thumbs` (around 1080px).
 2. Add it to `gallery` in `js/config.js`. Use `wide: true` for a landscape photo.
 
+## Gift QR codes
+
+`photos/qr/` has two files per account: `name.png` is the code shown on the page, and `name-card.jpg` is what guests get from Save QR. Both were redrawn from the bank's own QR (same payment data, checksum verified) without the center logo so every banking app can read them.
+
 ## How guests RSVP
 
 The first option that's filled in under `rsvp` in `js/config.js` wins:

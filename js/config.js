@@ -119,28 +119,32 @@ window.WEDDING = {
   },
 
   gifts: {
+    eyebrow: "Preferred gift",
     intro: [
-      "Your presence at our wedding is already the greatest gift we could ask for.",
-      "But for those who wish to bless us as we begin this new chapter, we've provided the following information:"
+      "Having you celebrate with us is already the greatest gift.",
+      "If you'd like to bless us with something more, we'd be grateful for a monetary gift instead of a physical one. It will help us as we begin our new life together."
     ],
-    // copy: true adds a Copy button. qr: "photos/gcash-qr.png" shows a QR code.
+    howTo: "Scan a code with your bank or e-wallet app. Viewing this on your phone? Tap Save QR, then upload the saved image in your GCash or banking app.",
+    // qr: the code shown on the page. download: the image guests get from Save QR.
+    // details rows are optional. copy: true adds a Copy button.
     options: [
       {
         label: "GCash",
-        qr: "",
-        details: [
-          { key: "Name", value: "[Account name]" },
-          { key: "Number", value: "[GCash number]", copy: true }
-        ]
+        qr: "photos/qr/gcash.png",
+        download: "photos/qr/gcash-card.jpg",
+        details: [{ key: "Name", value: "JO*N LE***L C." }]
       },
       {
-        label: "Bank transfer",
-        qr: "",
-        details: [
-          { key: "Bank", value: "[Bank name]" },
-          { key: "Name", value: "[Account name]" },
-          { key: "Account no.", value: "[Account number]", copy: true }
-        ]
+        label: "BDO",
+        qr: "photos/qr/bdo.png",
+        download: "photos/qr/bdo-card.jpg",
+        details: [{ key: "Account", value: "Ending in 6614" }]
+      },
+      {
+        label: "EastWest",
+        qr: "photos/qr/eastwest.png",
+        download: "photos/qr/eastwest-card.jpg",
+        details: [{ key: "Account", value: "Ending in 1825" }]
       }
     ]
   },
@@ -158,6 +162,7 @@ window.WEDDING = {
     { q: "What time should I arrive?", a: "The ceremony starts at 2:00 PM, so please arrive a little before then." },
     { q: "Where is the wedding?", a: "At KVN Resort in Mamarlao, San Carlos City, Pangasinan. There's a map in the How to Get There section." },
     { q: "What should I wear?", a: "Formal attire in burgundy or beige. Please skip very short skirts or dresses and go for something elegant and modest." },
+    { q: "What gift can we give?", a: "Having you there is already the greatest gift. If you'd like to give something, we'd be grateful for a monetary gift instead of a physical one. Our QR codes are in the Preferred Gift section." },
     { q: "When do I need to RSVP by?", a: "Please RSVP before {deadline} by texting or calling Nicole D. at 0945 861 2234." },
     { q: "Is the ceremony indoors or outdoors?", a: "[Answer]" },
     { q: "Can I bring a plus one?", a: "We're only expecting those who received an invitation. If you'd like to bring someone along, please let Nicole or Lemuel know ahead of time so we can save them a seat too." },
