@@ -517,11 +517,14 @@ button { font: inherit; color: inherit; }
 .petals { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; pointer-events: none; }
 
 .hero__deco { position: absolute; inset: 0; pointer-events: none; }
+/* the arch wraps the content, with extra room on top so text clears the curve */
 .hero__frame {
-  position: absolute; left: 50%; top: 50%;
+  position: absolute; z-index: -1;
+  left: 50%;
+  top: calc(-1 * clamp(52px, 124px - 5vw, 104px));
+  bottom: -30px;
   width: min(600px, 90vw);
-  height: min(82svh, 760px);
-  translate: -50% -50%;
+  translate: -50% 0;
   border: 1px solid rgba(92, 21, 38, .28);
   border-radius: 999px 999px 10px 10px;
   clip-path: inset(100% -40% -40% -40%);
@@ -538,7 +541,8 @@ button { font: inherit; color: inherit; }
 .hero__lily--l { left: clamp(-20px, 3vw, 70px); rotate: -8deg; }
 .hero__lily--r { right: clamp(-20px, 3vw, 70px); rotate: 8deg; scale: -1 1; --draw-delay: 1100ms; }
 @media (max-width: 600px) {
-  .hero__lily { bottom: -4%; width: 86px; }
+  .hero { padding-top: 132px; padding-bottom: 140px; }
+  .hero__lily { bottom: -4%; width: 70px; }
   .hero__lily--l { left: -14px; }
   .hero__lily--r { right: -14px; }
 }
@@ -557,7 +561,7 @@ button { font: inherit; color: inherit; }
   display: flex; flex-direction: column; align-items: center;
   margin: .1em 0 0;
   font-family: var(--script);
-  font-size: clamp(3.8rem, min(15vw, 12.5vh), 7.4rem);
+  font-size: clamp(3.6rem, min(15vw, 11vh), 7.4rem);
   line-height: 1.05;
   color: var(--burgundy);
   outline: none;
@@ -614,7 +618,28 @@ button { font: inherit; color: inherit; }
 .hero__place { margin: 0 auto; font-size: clamp(1.15rem, 2.2vw, 1.3rem); line-height: 1.45; color: var(--muted); }
 .hero__place strong { display: block; font-family: var(--sans); font-size: .82rem; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--ink); }
 .hero__place span { display: block; font-style: italic; }
-.hero__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 28px; }
+.hero__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 22px; }
+
+.mini-countdown { display: flex; justify-content: center; gap: clamp(6px, 2vw, 10px); margin: 20px auto 0; }
+.mini-countdown__unit {
+  min-width: clamp(58px, 15vw, 72px);
+  padding: 8px 6px 7px;
+  border: 1px solid rgba(92, 21, 38, .2);
+  border-radius: 12px;
+  background: rgba(247, 243, 237, .65);
+}
+.mini-countdown__num {
+  position: relative;
+  display: block;
+  height: 1.15em;
+  overflow: hidden;
+  font-size: clamp(1.6rem, 5vw, 2rem);
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--burgundy);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.mini-countdown__label { display: block; margin-top: 1px; font-family: var(--sans); font-size: .56rem; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
 
 .scroll-cue {
   position: absolute; left: 50%; bottom: 22px; z-index: 2;
@@ -625,6 +650,7 @@ button { font: inherit; color: inherit; }
   transition: opacity 1s 2.9s;
 }
 .is-revealed .scroll-cue { opacity: 1; }
+@media (max-height: 800px) { .scroll-cue { display: none; } }
 .scroll-cue span {
   position: absolute; left: 50%; top: 8px;
   width: 3px; height: 8px; margin-left: -1.5px;
@@ -731,9 +757,9 @@ button { font: inherit; color: inherit; }
   line-height: 1.15;
   font-variant-numeric: lining-nums tabular-nums;
 }
-.countdown__num span { position: absolute; inset: 0; }
-.countdown__num span.is-in { animation: rollIn .7s var(--ease-out) both; }
-.countdown__num span.is-out { animation: rollOut .7s var(--ease-out) both; }
+:is(.countdown__num, .mini-countdown__num) span { position: absolute; inset: 0; }
+:is(.countdown__num, .mini-countdown__num) span.is-in { animation: rollIn .7s var(--ease-out) both; }
+:is(.countdown__num, .mini-countdown__num) span.is-out { animation: rollOut .7s var(--ease-out) both; }
 .countdown__label {
   display: block;
   margin-top: 8px;

@@ -69,11 +69,11 @@
       <div class="satin" aria-hidden="true"></div>
       <canvas class="petals" id="petals" aria-hidden="true"></canvas>
       <div class="hero__deco" data-parallax="0.18" aria-hidden="true">
-        <div class="hero__frame"></div>
         <span class="hero__lily hero__lily--l" data-lily></span>
         <span class="hero__lily hero__lily--r" data-lily></span>
       </div>
       <div class="hero__content" data-parallax="0.3">
+        <div class="hero__frame" aria-hidden="true"></div>
         <p class="eyebrow" data-hero style="--hd:500ms" data-bind="heroEyebrow"></p>
         <h1 class="hero__names" tabindex="-1">
           <span class="hero__name" data-hero style="--hd:700ms" data-bind="first"></span>
@@ -87,7 +87,13 @@
           <span class="datebar__side"><span data-bind="month"></span><span data-bind="year"></span></span>
         </div>
         <p class="hero__place" data-hero style="--hd:2450ms"><strong data-bind="venueName"></strong><span data-bind="venueAddress"></span></p>
-        <div class="hero__actions" data-hero style="--hd:2600ms">
+        <div class="mini-countdown" id="hero-countdown" data-hero style="--hd:2600ms" aria-hidden="true">
+          <div class="mini-countdown__unit"><span class="mini-countdown__num" data-unit="days"></span><span class="mini-countdown__label">Days</span></div>
+          <div class="mini-countdown__unit"><span class="mini-countdown__num" data-unit="hours"></span><span class="mini-countdown__label">Hours</span></div>
+          <div class="mini-countdown__unit"><span class="mini-countdown__num" data-unit="minutes"></span><span class="mini-countdown__label">Mins</span></div>
+          <div class="mini-countdown__unit"><span class="mini-countdown__num" data-unit="seconds"></span><span class="mini-countdown__label">Secs</span></div>
+        </div>
+        <div class="hero__actions" data-hero style="--hd:2750ms">
           <a class="btn btn--solid" href="#rsvp">RSVP now</a>
           <a class="btn btn--ghost" href="#wedding">The details</a>
         </div>

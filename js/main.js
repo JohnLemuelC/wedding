@@ -488,27 +488,28 @@
   /* ---------- Countdown ---------- */
   function setupCountdown() {
     const target = new Date(C.start).getTime();
+    // one countdown on the home screen, a bigger one further down
     const hosts = {};
-    const shown = {};
-    $$("[data-unit]").forEach((el) => { hosts[el.dataset.unit] = el; });
+    $$("[data-unit]").forEach((el) => { (hosts[el.dataset.unit] ||= []).push(el); });
 
     const set = (unit, value) => {
       const text = unit === "days" ? String(value) : String(value).padStart(2, "0");
-      if (shown[unit] === text) return;
-      const host = hosts[unit];
-      $$(".is-out", host).forEach((n) => n.remove());
-      const current = host.querySelector("span");
-      const next = document.createElement("span");
-      next.textContent = text;
-      if (current && !reduceMotion) {
-        current.className = "is-out";
-        next.className = "is-in";
-        current.addEventListener("animationend", () => current.remove(), { once: true });
-      } else if (current) {
-        current.remove();
-      }
-      host.appendChild(next);
-      shown[unit] = text;
+      hosts[unit].forEach((host) => {
+        if (host.dataset.shown === text) return;
+        $$(".is-out", host).forEach((n) => n.remove());
+        const current = host.querySelector("span");
+        const next = document.createElement("span");
+        next.textContent = text;
+        if (current && !reduceMotion) {
+          current.className = "is-out";
+          next.className = "is-in";
+          current.addEventListener("animationend", () => current.remove(), { once: true });
+        } else if (current) {
+          current.remove();
+        }
+        host.appendChild(next);
+        host.dataset.shown = text;
+      });
     };
 
     let timer = 0;
@@ -517,6 +518,7 @@
       if (diff <= 0) {
         clearInterval(timer);
         $("#countdown-grid").hidden = true;
+        $("#hero-countdown").hidden = true;
         $("#countdown-done").hidden = false;
         return;
       }
