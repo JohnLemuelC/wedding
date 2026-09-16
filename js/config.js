@@ -29,8 +29,8 @@ window.WEDDING = {
   },
 
   welcome: {
-    photo: "photos/together.jpg",
-    photoPosition: "50% 50%",
+    photo: "photos/roses-embrace.jpg",
+    photoPosition: "50% 40%",
     quote: "Together with our families, we invite you to celebrate the beginning of our forever."
   },
 
