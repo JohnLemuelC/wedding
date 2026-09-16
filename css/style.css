@@ -1135,6 +1135,8 @@ button { font: inherit; color: inherit; }
   color: var(--burgundy);
 }
 .venue__address { margin: 0 0 14px; font-style: italic; color: var(--muted); }
+.venue__listed { margin: 0 0 14px; font-size: 1.05rem; color: var(--muted); }
+.venue__listed strong { font-weight: 600; color: var(--ink); }
 .venue__code { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 0 0 24px; }
 .venue__code-label { font-family: var(--sans); font-size: .68rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
 .venue__code-value { font-family: var(--sans); font-size: 1rem; font-weight: 500; letter-spacing: .06em; }

@@ -184,8 +184,8 @@
     $("#venues").classList.toggle("venues--single", venues.length === 1);
     $("#venues").innerHTML = venues.map((v) => {
       const query = isReal(v.coordinates) ? v.coordinates : `${v.name}, ${v.address}`;
-      const map = isReal(v.address) || isReal(v.coordinates)
-        ? `<iframe src="${esc(mapEmbed(query))}" title="Map of ${esc(v.name)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`
+      const map = isReal(v.mapEmbed) || isReal(v.address) || isReal(v.coordinates)
+        ? `<iframe src="${esc(isReal(v.mapEmbed) ? v.mapEmbed : mapEmbed(query))}" title="Map of ${esc(v.name)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`
         : "";
       return `<article class="venue" data-reveal="up">
         <div class="venue__map${map ? "" : " venue__map--empty"}">${map || `${ICONS.pin}<p>The map shows up once the address is in.</p>`}</div>
@@ -193,6 +193,7 @@
           <p class="eyebrow">${esc(v.label)}</p>
           <h3>${esc(v.name)}</h3>
           ${isReal(v.address) ? `<p class="venue__address">${esc(v.address)}</p>` : ""}
+          ${isReal(v.listedAs) ? `<p class="venue__listed">On Google Maps: <strong>${esc(v.listedAs)}</strong></p>` : ""}
           ${isReal(v.plusCode) ? `<p class="venue__code">
             <span class="venue__code-label">Plus code</span>
             <span class="venue__code-value">${esc(v.plusCode.split(",")[0])}</span>
