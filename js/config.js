@@ -73,7 +73,7 @@ window.WEDDING = {
   },
 
   rsvp: {
-    deadline: "September 15, 2026",
+    deadline: "September 20, 2026",
     lead: "Your presence would make our celebration even more meaningful.",
     noteTitle: "A little note",
     note: "We've planned this day with so much love for the people on our guest list, so we're only expecting those who received an invitation. If you'd like to bring someone along, please let Nicole or Lemuel know ahead of time so we can save them a seat too.",
@@ -163,7 +163,7 @@ window.WEDDING = {
     { q: "Where is the wedding?", a: "At KVN Resort in Mamarlao, San Carlos City, Pangasinan. There's a map in the How to Get There section." },
     { q: "What should I wear?", a: "Formal attire in burgundy or beige. Please skip very short skirts or dresses and go for something elegant and modest." },
     { q: "What gift can we give?", a: "Having you there is already the greatest gift. If you'd like to give something, we'd be grateful for a monetary gift instead of a physical one. Our QR codes are in the Preferred Gift section." },
-    { q: "When do I need to RSVP by?", a: "Please RSVP before {deadline} by texting or calling Nicole D. at 0945 861 2234." },
+    { q: "When do I need to RSVP by?", a: "Please RSVP by {deadline}. Just text or call Nicole D. at 0945 861 2234." },
     { q: "Is the ceremony indoors or outdoors?", a: "[Answer]" },
     { q: "Can I bring a plus one?", a: "We're only expecting those who received an invitation. If you'd like to bring someone along, please let Nicole or Lemuel know ahead of time so we can save them a seat too." },
     { q: "Is there parking?", a: "[Answer]" },
