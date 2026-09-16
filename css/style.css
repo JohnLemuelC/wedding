@@ -984,6 +984,18 @@ button { font: inherit; color: inherit; }
 .rsvp__actions .btn { flex: 1 1 200px; max-width: 280px; }
 .rsvp__hint { margin: 18px 0 0; font-style: italic; color: var(--muted); }
 
+.rsvp__note {
+  margin: 34px 0 0;
+  padding: 24px clamp(18px, 4vw, 30px) 22px;
+  text-align: center;
+  background: var(--satin);
+  border: 1px solid rgba(196, 164, 127, .55);
+  border-radius: 16px;
+}
+.rsvp__note-heart { display: block; width: 18px; height: 18px; margin: 0 auto 8px; color: var(--burgundy); animation: beat 2.4s ease-in-out infinite; }
+.rsvp__note-title { margin: 0 0 8px; font-family: var(--sans); font-size: .7rem; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--tan-text); }
+.rsvp__note-text { margin: 0; font-size: 1.18rem; line-height: 1.55; text-wrap: pretty; }
+
 .field { min-width: 0; margin: 0 0 24px; padding: 0; border: 0; }
 .field label, .field legend {
   display: block;

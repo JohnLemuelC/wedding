@@ -75,6 +75,8 @@ window.WEDDING = {
   rsvp: {
     deadline: "September 15, 2026",
     lead: "Your presence would make our celebration even more meaningful.",
+    noteTitle: "A little note",
+    note: "We've planned this day with so much love for the people on our guest list, so we're only expecting those who received an invitation. If you'd like to bring someone along, please let Nicole or Lemuel know ahead of time so we can save them a seat too.",
     // How guests RSVP. The first one that's filled in wins:
     // 1. googleFormUrl: a Google Form link, shown as one big button
     // 2. endpoint: a Google Apps Script web app URL, turns on the form on the page (see README)
@@ -158,7 +160,7 @@ window.WEDDING = {
     { q: "What should I wear?", a: "Formal attire in burgundy or beige. Please skip very short skirts or dresses and go for something elegant and modest." },
     { q: "When do I need to RSVP by?", a: "Please RSVP before {deadline} by texting or calling Nicole D. at 0945 861 2234." },
     { q: "Is the ceremony indoors or outdoors?", a: "[Answer]" },
-    { q: "Can I bring a plus one?", a: "[Answer]" },
+    { q: "Can I bring a plus one?", a: "We're only expecting those who received an invitation. If you'd like to bring someone along, please let Nicole or Lemuel know ahead of time so we can save them a seat too." },
     { q: "Is there parking?", a: "[Answer]" },
     { q: "Can children attend?", a: "[Answer]" },
     { q: "Can I share this invitation?", a: "We kindly ask that you keep this invitation to yourself and not share or forward it to others. We're celebrating this day with the people closest to our hearts." },

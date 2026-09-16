@@ -107,6 +107,8 @@
       dressThanks: C.dressCode.thanks,
       deadline: C.rsvp.deadline,
       rsvpLead: C.rsvp.lead,
+      rsvpNoteTitle: C.rsvp.noteTitle,
+      rsvpNote: C.rsvp.note,
       rsvpName: C.rsvp.contact ? C.rsvp.contact.name : "",
       rsvpPhone: C.rsvp.contact ? formatPhone(C.rsvp.contact.phone) : "",
       shareLead: C.sharePhotos.lead,
@@ -126,6 +128,8 @@
     $$("[data-monogram]").forEach((el) => { el.innerHTML = monogramHTML(); });
     $$("[data-heart]").forEach((el) => { el.innerHTML = HEART; });
     $$("[data-lily]").forEach((el) => { el.innerHTML = LILY; });
+
+    if (!isReal(C.rsvp.note)) $("#rsvp-note").hidden = true;
 
     // Welcome photo
     $("#welcome-photo").innerHTML = photo(C.welcome.photo, `${C.couple.first} and ${C.couple.second}`, C.welcome.photoPosition);
