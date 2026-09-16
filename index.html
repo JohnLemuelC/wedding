@@ -3,15 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <!-- Keeps the site out of search results. Remove this line if you want it findable on Google. -->
+  <!-- Keeps the site out of search results. -->
   <meta name="robots" content="noindex, nofollow">
-  <title>Our Wedding</title>
-  <meta name="description" content="Join us to celebrate our wedding.">
-  <meta name="theme-color" content="#FBF7F0">
+  <title>Nicole &amp; Lemuel · September 30, 2026</title>
+  <meta name="description" content="Nicole and Lemuel are getting married. Wednesday, September 30, 2026.">
+  <!-- What shows up when the link is sent on Messenger -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Nicole &amp; Lemuel are getting married!">
+  <meta property="og:description" content="Wednesday, September 30, 2026. Tap for the details, directions, and how to RSVP.">
+  <meta property="og:image" content="https://johnlemuelc.github.io/wedding/assets/share.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://johnlemuelc.github.io/wedding/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#440A19">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@400;500&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@400;500&family=Pinyon+Script&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/config.js" defer></script>
   <script src="js/main.js" defer></script>
@@ -19,70 +28,87 @@
 <body class="is-locked">
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- Intro: envelope that opens -->
+  <!-- Invitation envelope -->
   <div class="intro" id="intro">
+    <div class="satin" aria-hidden="true"></div>
     <div class="intro__inner">
       <p class="intro__to">You're invited</p>
       <div class="envelope" id="envelope">
         <div class="envelope__back"></div>
         <div class="envelope__card">
-          <span class="envelope__label">Save the date</span>
+          <span class="envelope__label" data-bind="tagline"></span>
           <span class="envelope__names" data-bind="namesShort"></span>
           <span class="envelope__date" data-bind="shortDate"></span>
         </div>
         <div class="envelope__front"></div>
         <div class="envelope__flap"></div>
-        <span class="envelope__seal" aria-hidden="true"><span data-bind="monogram"></span></span>
+        <span class="envelope__seal" aria-hidden="true"><span data-monogram></span></span>
       </div>
-      <button class="btn btn--ghost intro__btn" id="open-invite" type="button">Open the invitation</button>
+      <button class="btn btn--solid intro__btn" id="open-invite" type="button">Open the invitation</button>
     </div>
   </div>
 
   <header class="nav" id="nav">
-    <a href="#top" class="nav__brand" data-bind="monogram" aria-label="Back to top"></a>
+    <a href="#top" class="nav__brand" aria-label="Back to top"><span data-monogram></span></a>
     <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu">
       <span></span><span></span>
     </button>
     <nav class="nav__menu" id="nav-menu" aria-label="Main">
-      <a href="#story" style="--i:0">Our story</a>
-      <a href="#details" style="--i:1">The day</a>
-      <a href="#gallery" style="--i:2">Gallery</a>
-      <a href="#travel" style="--i:3">Travel</a>
+      <a href="#top" style="--i:0">Home</a>
+      <a href="#story" style="--i:1">Our Story</a>
+      <a href="#wedding" style="--i:2">The Wedding</a>
+      <a href="#gallery" style="--i:3">Gallery</a>
       <a href="#faq" style="--i:4">FAQ</a>
       <a href="#rsvp" class="nav__cta" style="--i:5">RSVP</a>
     </nav>
   </header>
 
   <main id="main">
-    <!-- Hero -->
+    <!-- 1. Home -->
     <section class="hero" id="top">
+      <div class="satin" aria-hidden="true"></div>
       <canvas class="petals" id="petals" aria-hidden="true"></canvas>
       <div class="hero__deco" data-parallax="0.18" aria-hidden="true">
-        <div class="hero__frame">
-          <span class="hero__sprig hero__sprig--l" data-sprig></span>
-          <span class="hero__sprig hero__sprig--r" data-sprig></span>
-        </div>
+        <div class="hero__frame"></div>
+        <span class="hero__lily hero__lily--l" data-lily></span>
+        <span class="hero__lily hero__lily--r" data-lily></span>
       </div>
-      <div class="hero__content" data-parallax="0.32">
-        <p class="eyebrow" data-hero style="--hd:600ms" data-bind="intro"></p>
+      <div class="hero__content" data-parallax="0.3">
+        <p class="eyebrow" data-hero style="--hd:500ms" data-bind="heroEyebrow"></p>
         <h1 class="hero__names" tabindex="-1">
-          <span class="hero__name" data-hero style="--hd:800ms" data-bind="first"></span>
-          <span class="hero__amp" data-hero style="--hd:1500ms">&amp;</span>
-          <span class="hero__name" data-hero style="--hd:1600ms" data-bind="second"></span>
+          <span class="hero__name" data-hero style="--hd:700ms" data-bind="first"></span>
+          <span class="hero__and" data-hero style="--hd:1400ms">and</span>
+          <span class="hero__name" data-hero style="--hd:1500ms" data-bind="second"></span>
         </h1>
-        <svg class="flourish draw hero__flourish" data-hero style="--hd:2100ms" viewBox="0 0 240 24" aria-hidden="true">
-          <path pathLength="1" d="M8 12 C 40 12, 60 6, 100 12"/>
-          <path pathLength="1" d="M232 12 C 200 12, 180 18, 140 12"/>
-          <path pathLength="1" style="--i:2" d="M120 20 C 104 10, 110 2, 120 9 C 130 2, 136 10, 120 20 Z"/>
-        </svg>
-        <p class="hero__date" data-hero style="--hd:2300ms" data-bind="displayDate"></p>
-        <p class="hero__place" data-hero style="--hd:2450ms"><span data-bind="venue"></span><span class="dot" aria-hidden="true"></span><span data-bind="city"></span></p>
+        <p class="hero__tagline" data-hero style="--hd:2100ms" data-bind="tagline"></p>
+        <div class="datebar" data-hero style="--hd:2300ms">
+          <span class="datebar__side datebar__side--l"><span data-bind="weekday"></span><span data-bind="time"></span></span>
+          <span class="datebar__day" data-bind="day"></span>
+          <span class="datebar__side"><span data-bind="month"></span><span data-bind="year"></span></span>
+        </div>
+        <p class="hero__place" data-hero style="--hd:2450ms"><strong data-bind="venueName"></strong><span data-bind="venueAddress"></span></p>
         <div class="hero__actions" data-hero style="--hd:2600ms">
-          <a class="btn btn--solid" href="#rsvp">RSVP</a>
-          <a class="btn btn--ghost" href="#details">The day</a>
+          <a class="btn btn--solid" href="#rsvp">RSVP now</a>
+          <a class="btn btn--ghost" href="#wedding">The details</a>
         </div>
       </div>
-      <a class="scroll-cue" href="#countdown" aria-label="Scroll to the countdown"><span></span></a>
+      <a class="scroll-cue" href="#welcome" aria-label="Scroll down"><span></span></a>
+    </section>
+
+    <!-- Welcome -->
+    <section class="section welcome" id="welcome">
+      <div class="container welcome__inner">
+        <div class="welcome__photo" data-reveal="scale" id="welcome-photo"></div>
+        <div class="welcome__text">
+          <span class="welcome__mark" data-reveal aria-hidden="true">&ldquo;</span>
+          <p class="welcome__quote" data-reveal data-bind="welcomeQuote"></p>
+          <ul class="facts" data-reveal>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span data-bind="dateTime"></span></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span data-bind="venueLine"></span></li>
+          </ul>
+          <div data-reveal><a class="btn btn--solid btn--lg" href="#rsvp">RSVP now</a></div>
+        </div>
+      </div>
     </section>
 
     <!-- Countdown -->
@@ -104,165 +130,129 @@
       </div>
     </section>
 
-    <!-- Story -->
+    <!-- 2. Our story -->
     <section class="section story" id="story">
       <div class="container">
         <header class="section__head">
-          <p class="eyebrow" data-reveal>How it started</p>
+          <p class="eyebrow" data-reveal>How it all started</p>
           <h2 class="section__title" data-split>Our Story</h2>
-          <svg class="flourish draw" data-reveal="draw" viewBox="0 0 240 24" aria-hidden="true">
-            <path pathLength="1" d="M8 12 C 40 12, 60 6, 100 12"/>
-            <path pathLength="1" d="M232 12 C 200 12, 180 18, 140 12"/>
-            <path pathLength="1" style="--i:2" d="M120 20 C 104 10, 110 2, 120 9 C 130 2, 136 10, 120 20 Z"/>
+          <svg class="flourish draw" data-reveal="trigger" viewBox="0 0 240 24" aria-hidden="true">
+            <path pathLength="1" d="M8 12 C 40 12, 60 6, 100 12"/><path pathLength="1" d="M232 12 C 200 12, 180 18, 140 12"/><path pathLength="1" style="--i:2" d="M120 20 C 104 10, 110 2, 120 9 C 130 2, 136 10, 120 20 Z"/>
           </svg>
         </header>
-        <div class="timeline" id="timeline">
-          <div class="timeline__line" aria-hidden="true"><span class="timeline__fill" id="timeline-fill"></span></div>
+        <div class="timeline" id="timeline" data-progress>
+          <div class="timeline__line" aria-hidden="true"><span class="progress-fill"></span></div>
+        </div>
+        <div class="story__end" data-reveal="up">
+          <span class="story__heart" data-heart aria-hidden="true"></span>
+          <h3 class="story__end-title">And now&hellip;</h3>
+          <p data-bind="storyEnding"></p>
         </div>
       </div>
     </section>
 
-    <!-- Details -->
-    <section class="section details" id="details">
+    <!-- 3. The wedding -->
+    <section class="section wedding" id="wedding">
       <div class="container">
         <header class="section__head">
           <p class="eyebrow" data-reveal data-bind="displayDate"></p>
-          <h2 class="section__title" data-split>The Day</h2>
-          <svg class="flourish draw" data-reveal="draw" viewBox="0 0 240 24" aria-hidden="true">
-            <path pathLength="1" d="M8 12 C 40 12, 60 6, 100 12"/>
-            <path pathLength="1" d="M232 12 C 200 12, 180 18, 140 12"/>
-            <path pathLength="1" style="--i:2" d="M120 20 C 104 10, 110 2, 120 9 C 130 2, 136 10, 120 20 Z"/>
+          <h2 class="section__title" data-split>The Details</h2>
+          <svg class="flourish draw" data-reveal="trigger" viewBox="0 0 240 24" aria-hidden="true">
+            <path pathLength="1" d="M8 12 C 40 12, 60 6, 100 12"/><path pathLength="1" d="M232 12 C 200 12, 180 18, 140 12"/><path pathLength="1" style="--i:2" d="M120 20 C 104 10, 110 2, 120 9 C 130 2, 136 10, 120 20 Z"/>
           </svg>
         </header>
-        <div class="events" id="events"></div>
-
-        <div class="schedule">
-          <h3 class="subhead" data-reveal>Order of the day</h3>
-          <ol class="schedule__list" id="schedule"></ol>
-        </div>
-
-        <div class="dresscode" data-reveal="up">
-          <p class="eyebrow">Dress code</p>
-          <p class="dresscode__text" data-bind="dressCode"></p>
-          <p class="sr-only">Our colors</p>
-          <div class="swatches" id="swatches" aria-hidden="true"></div>
-        </div>
+        <ol class="moments" id="moments" data-progress>
+          <li class="moments__line" aria-hidden="true"><span class="progress-fill"></span></li>
+        </ol>
+        <div class="venue-cards" id="venue-cards"></div>
       </div>
     </section>
 
-    <!-- Gallery -->
-    <section class="section gallery" id="gallery">
-      <div class="container container--wide">
-        <header class="section__head">
-          <p class="eyebrow" data-reveal>A few favorites</p>
-          <h2 class="section__title" data-split>Gallery</h2>
-          <svg class="flourish draw" data-reveal="draw" viewBox="0 0 240 24" aria-hidden="true">
-            <path pathLength="1" d="M8 12 C 40 12, 60 6, 100 12"/>
-            <path pathLength="1" d="M232 12 C 200 12, 180 18, 140 12"/>
-            <path pathLength="1" style="--i:2" d="M120 20 C 104 10, 110 2, 120 9 C 130 2, 136 10, 120 20 Z"/>
-          </svg>
-        </header>
-        <div class="gallery__grid" id="gallery-grid"></div>
-      </div>
-    </section>
-
-    <!-- Travel -->
-    <section class="section travel" id="travel">
+    <!-- 4. Dress code -->
+    <section class="section dress" id="dress-code">
       <div class="container">
-        <header class="section__head">
-          <p class="eyebrow" data-reveal>Getting there</p>
-          <h2 class="section__title" data-split>Travel &amp; Stay</h2>
-          <svg class="flourish draw" data-reveal="draw" viewBox="0 0 240 24" aria-hidden="true">
-            <path pathLength="1" d="M8 12 C 40 12, 60 6, 100 12"/>
-            <path pathLength="1" d="M232 12 C 200 12, 180 18, 140 12"/>
-            <path pathLength="1" style="--i:2" d="M120 20 C 104 10, 110 2, 120 9 C 130 2, 136 10, 120 20 Z"/>
-          </svg>
+        <header class="section__head section__head--tight">
+          <p class="eyebrow" data-reveal>Formal attire</p>
+          <h2 class="section__title" data-split data-bind="dressTitle"></h2>
         </header>
-        <div class="travel__grid" id="travel-grid"></div>
+        <div class="palette" id="palette" data-reveal="trigger"></div>
+        <p class="dress__note" data-reveal data-bind="dressNote"></p>
+        <p class="dress__thanks" data-reveal data-bind="dressThanks"></p>
       </div>
     </section>
 
-    <!-- FAQ -->
-    <section class="section faq" id="faq">
-      <div class="container">
-        <header class="section__head">
-          <p class="eyebrow" data-reveal>Good to know</p>
-          <h2 class="section__title" data-split>Questions</h2>
-          <svg class="flourish draw" data-reveal="draw" viewBox="0 0 240 24" aria-hidden="true">
-            <path pathLength="1" d="M8 12 C 40 12, 60 6, 100 12"/>
-            <path pathLength="1" d="M232 12 C 200 12, 180 18, 140 12"/>
-            <path pathLength="1" style="--i:2" d="M120 20 C 104 10, 110 2, 120 9 C 130 2, 136 10, 120 20 Z"/>
-          </svg>
-        </header>
-        <div class="faq__list" id="faq-list"></div>
-      </div>
-    </section>
-
-    <!-- RSVP -->
+    <!-- 5. RSVP -->
     <section class="section rsvp" id="rsvp">
       <div class="rsvp__card" data-reveal="scale">
         <header class="section__head section__head--tight">
-          <p class="eyebrow">Kindly reply by <span data-bind="deadline"></span></p>
-          <h2 class="section__title" data-split>RSVP</h2>
+          <p class="eyebrow">Kindly RSVP before <span data-bind="deadline"></span></p>
+          <h2 class="section__title" data-split>Will You Join Us?</h2>
+          <p class="section__lead" data-bind="rsvpLead"></p>
         </header>
 
-        <form class="rsvp__form" id="rsvp-form" novalidate>
+        <!-- RSVP by text or call -->
+        <div class="rsvp__contact" id="rsvp-contact" hidden>
+          <p class="rsvp__how">Send a text or call <strong data-bind="rsvpName"></strong></p>
+          <p class="rsvp__number" data-bind="rsvpPhone"></p>
+          <div class="rsvp__actions">
+            <a class="btn btn--solid btn--lg" id="rsvp-sms" href="#">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4V6a1 1 0 0 1 1-1z"/><path d="M8 10h8M8 13h5"/></svg>
+              Text to RSVP
+            </a>
+            <a class="btn btn--ghost btn--lg" id="rsvp-call" href="#">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h3l2 5-2.5 1.5a11 11 0 0 0 7 7L16 14l5 2v3a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2"/></svg>
+              Call
+            </a>
+          </div>
+          <p class="rsvp__hint">Include your name and how many of you are coming.</p>
+        </div>
+
+        <!-- RSVP with a Google Form -->
+        <div class="rsvp__external" id="rsvp-external" hidden>
+          <a class="btn btn--solid btn--lg btn--block" id="rsvp-external-link" href="#" target="_blank" rel="noopener">RSVP here</a>
+        </div>
+
+        <!-- RSVP form saved to a Google Sheet -->
+        <form class="rsvp__form" id="rsvp-form" novalidate hidden>
           <div class="field" data-field="name">
             <label for="f-name">Full name</label>
             <div class="field__control"><input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="e-name"></div>
             <p class="field__error" id="e-name"></p>
           </div>
-
-          <div class="field" data-field="email">
-            <label for="f-email">Email</label>
-            <div class="field__control"><input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="e-email"></div>
-            <p class="field__error" id="e-email"></p>
+          <div class="field" data-field="phone">
+            <label for="f-phone">Contact number</label>
+            <div class="field__control"><input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required aria-describedby="e-phone"></div>
+            <p class="field__error" id="e-phone"></p>
           </div>
-
           <fieldset class="field" data-field="attending" aria-describedby="e-attending">
-            <legend>Will you be there?</legend>
+            <legend>Will you attend?</legend>
             <div class="choices">
-              <label class="pill"><input type="radio" name="attending" value="yes" required><span>Joyfully accepts</span></label>
-              <label class="pill"><input type="radio" name="attending" value="no"><span>Regretfully declines</span></label>
+              <label class="pill"><input type="radio" name="attending" value="yes" required><span>Yes, I'll be there!</span></label>
+              <label class="pill"><input type="radio" name="attending" value="no"><span>Sorry, I can't attend</span></label>
             </div>
             <p class="field__error" id="e-attending"></p>
           </fieldset>
-
           <div class="rsvp__more" id="rsvp-more">
             <div>
-              <div class="field-row">
-                <div class="field">
-                  <label for="f-guests">Guests in your party</label>
-                  <div class="field__control"><select id="f-guests" name="guests"></select></div>
-                </div>
-                <div class="field" id="meal-field">
-                  <label for="f-meal">Meal preference</label>
-                  <div class="field__control"><select id="f-meal" name="meal"></select></div>
-                </div>
+              <div class="field">
+                <label for="f-guests">Number of guests</label>
+                <div class="field__control"><select id="f-guests" name="guests"></select></div>
               </div>
               <div class="field">
-                <label for="f-diet">Allergies or dietary needs</label>
+                <label for="f-diet">Dietary restrictions</label>
                 <div class="field__control"><input id="f-diet" name="dietary" type="text"></div>
-              </div>
-              <div class="field">
-                <label for="f-song">A song that gets you dancing</label>
-                <div class="field__control"><input id="f-song" name="song" type="text"></div>
               </div>
             </div>
           </div>
-
           <div class="field">
-            <label for="f-msg">A note for us <span class="optional">(optional)</span></label>
+            <label for="f-msg">Message for the couple <span class="optional">(optional)</span></label>
             <div class="field__control"><textarea id="f-msg" name="message" rows="3"></textarea></div>
           </div>
-
-          <!-- Spam trap. Real people never see or fill this. -->
           <div class="hp" aria-hidden="true">
             <label for="f-website">Website</label>
             <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
           </div>
-
-          <button class="btn btn--solid btn--block" type="submit">
+          <button class="btn btn--solid btn--block btn--lg" type="submit">
             <span class="btn__label">Send RSVP</span>
             <span class="btn__spinner" aria-hidden="true"></span>
           </button>
@@ -276,19 +266,99 @@
           </svg>
           <h3 class="thanks__title" id="thanks-title"></h3>
           <p class="thanks__text" id="thanks-text"></p>
-          <p class="thanks__note" id="thanks-note" hidden>Preview mode: the RSVP form isn't connected to a sheet yet, so this reply was not saved.</p>
           <button class="link link--button" id="rsvp-again" type="button">Send another RSVP</button>
         </div>
       </div>
     </section>
+
+    <!-- 6. Location -->
+    <section class="section location" id="location">
+      <div class="container">
+        <header class="section__head">
+          <p class="eyebrow" data-reveal>Location &amp; directions</p>
+          <h2 class="section__title" data-split>How to Get There</h2>
+        </header>
+        <div class="venues" id="venues"></div>
+        <div class="tips" id="tips"></div>
+      </div>
+    </section>
+
+    <!-- 7. Gallery -->
+    <section class="section gallery" id="gallery">
+      <div class="container container--gallery">
+        <header class="section__head">
+          <p class="eyebrow" data-reveal>Our gallery</p>
+          <h2 class="section__title" data-split>Our Memories</h2>
+          <svg class="flourish draw" data-reveal="trigger" viewBox="0 0 240 24" aria-hidden="true">
+            <path pathLength="1" d="M8 12 C 40 12, 60 6, 100 12"/><path pathLength="1" d="M232 12 C 200 12, 180 18, 140 12"/><path pathLength="1" style="--i:2" d="M120 20 C 104 10, 110 2, 120 9 C 130 2, 136 10, 120 20 Z"/>
+          </svg>
+        </header>
+        <div class="gallery__grid" id="gallery-grid"></div>
+      </div>
+    </section>
+
+    <!-- 8. Share your photos -->
+    <section class="section share" id="share">
+      <div class="container">
+        <div class="share__card" data-reveal="up">
+          <span class="share__icon" id="share-icon"></span>
+          <p class="eyebrow">Share your photos</p>
+          <h2 class="section__title" data-split>Capture &amp; Share</h2>
+          <p class="share__lead" data-bind="shareLead"></p>
+          <p class="share__text" data-bind="shareText"></p>
+          <div class="action" id="share-action"></div>
+          <p class="share__note" data-bind="shareNote"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Gifts -->
+    <section class="section gifts" id="gifts">
+      <div class="container">
+        <header class="section__head section__head--tight">
+          <p class="eyebrow" data-reveal>A little note about</p>
+          <h2 class="section__title" data-split>Gifts</h2>
+        </header>
+        <div class="gifts__intro" id="gifts-intro" data-reveal></div>
+        <div class="gift-list" id="gift-list"></div>
+      </div>
+    </section>
+
+    <!-- 10. Contact -->
+    <section class="section contact" id="contact">
+      <div class="container">
+        <header class="section__head section__head--tight">
+          <p class="eyebrow" data-reveal>Questions about the wedding?</p>
+          <h2 class="section__title" data-split>Need Help?</h2>
+          <p class="section__lead" data-reveal data-bind="contactLead"></p>
+        </header>
+        <div class="contacts" id="contacts"></div>
+        <div class="action contact__messenger" id="messenger"></div>
+      </div>
+    </section>
+
+    <!-- 11. FAQ -->
+    <section class="section faq" id="faq">
+      <div class="container">
+        <header class="section__head">
+          <p class="eyebrow" data-reveal>Frequently asked</p>
+          <h2 class="section__title" data-split>Questions</h2>
+        </header>
+        <div class="faq__list" id="faq-list"></div>
+      </div>
+    </section>
   </main>
 
-  <footer class="footer">
-    <span class="footer__sprig" data-sprig data-reveal="draw" aria-hidden="true"></span>
-    <p class="footer__names" data-bind="namesShort"></p>
-    <p class="footer__date" data-bind="displayDate"></p>
-    <p class="footer__note" data-bind="footerNote"></p>
-    <p class="footer__tag" data-bind="hashtag"></p>
+  <!-- 12. Closing -->
+  <footer class="closing">
+    <span class="closing__lily" data-lily data-reveal="trigger" aria-hidden="true"></span>
+    <p class="closing__title" data-bind="closingTitle"></p>
+    <p class="closing__text" data-bind="closingText"></p>
+    <p class="closing__names" data-bind="namesShort"></p>
+    <p class="closing__date" data-bind="displayDate"></p>
+    <span class="closing__heart" data-heart aria-hidden="true"></span>
+    <p class="closing__request" data-bind="closingRequest"></p>
+    <p class="closing__tag" data-bind="hashtag"></p>
   </footer>
 
   <button class="to-top" id="to-top" type="button" aria-label="Back to top">
@@ -299,7 +369,6 @@
     </svg>
   </button>
 
-  <!-- Photo viewer -->
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" hidden>
     <button class="lightbox__btn lightbox__close" type="button" aria-label="Close">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>

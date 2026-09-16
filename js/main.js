@@ -7,7 +7,16 @@
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  // Anything still holding a [placeholder] is treated as not filled in yet.
+  const isReal = (s) => Boolean(s) && !/\[[^\]]*\]/.test(String(s));
+  const digits = (s) => String(s || "").replace(/\D/g, "");
+  const formatPhone = (p) => {
+    const d = digits(p);
+    return d.length === 11 && d.startsWith("09") ? `${d.slice(0, 4)} ${d.slice(4, 7)} ${d.slice(7)}` : p;
+  };
   const mapsUrl = (q) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+  const mapEmbed = (q) => `https://maps.google.com/maps?q=${encodeURIComponent(q)}&z=15&output=embed`;
 
   const store = {
     get(k) { try { return sessionStorage.getItem(k); } catch { return null; } },
@@ -15,117 +24,234 @@
   };
 
   /* ---------- SVG pieces ---------- */
-  const LEAVES = [
-    "M58 300 C 52 230, 70 150, 60 90 C 55 60, 62 30, 66 8",
-    "M56 262 C 40 260, 24 248, 20 230 C 36 230, 50 242, 56 262 Z",
-    "M58 228 C 74 224, 90 210, 94 192 C 78 194, 64 208, 58 228 Z",
-    "M61 190 C 45 188, 30 176, 26 158 C 42 158, 56 170, 61 190 Z",
-    "M62 152 C 78 148, 92 134, 95 116 C 80 118, 67 132, 62 152 Z",
-    "M60 115 C 46 112, 34 100, 32 84 C 46 86, 57 98, 60 115 Z",
-    "M59 80 C 72 76, 84 64, 86 48 C 73 51, 62 62, 59 80 Z",
-    "M63 46 C 53 42, 45 32, 45 20 C 56 24, 62 34, 63 46 Z"
-  ];
-  const sprig = () =>
-    `<svg class="sprig" viewBox="0 0 120 300" aria-hidden="true">${LEAVES.map((d, i) => `<path pathLength="1" style="--i:${i}" d="${d}"/>`).join("")}</svg>`;
+  const HEART = `<svg class="heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 6.9 4.5c2.1 0 3.6 1.2 5.1 3 1.5-1.8 3-3 5.1-3 3.5 0 5.5 3.5 4.2 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg>`;
 
+  // Calla lily line drawing, like the ones on the invitation
+  const LILY = `<svg class="lily" viewBox="0 0 140 320" aria-hidden="true">
+    <path class="lily__stem" pathLength="1" style="--i:0" d="M56 318 C 49 280, 67 230, 62 176"/>
+    <path class="lily__leaf" pathLength="1" style="--i:1" d="M57 272 C 33 260, 17 236, 19 202 C 39 216, 53 242, 57 272 Z"/>
+    <path class="lily__vein" pathLength="1" style="--i:2" d="M56 268 C 43 250, 31 230, 21 206"/>
+    <path class="lily__petal lily__body" pathLength="1" style="--i:2" d="M62 176 C 51 160, 45 136, 45 110 C 45 84, 53 62, 70 50"/>
+    <path class="lily__petal" pathLength="1" style="--i:3" d="M62 176 C 73 162, 83 142, 88 118 C 92 102, 96 88, 104 78"/>
+    <path class="lily__petal" pathLength="1" style="--i:4" d="M70 50 C 83 44, 99 55, 104 78"/>
+    <path class="lily__petal lily__lip" pathLength="1" style="--i:5" d="M70 50 C 84 36, 104 26, 124 21 C 133 19, 136 27, 128 32 C 117 40, 108 58, 104 78"/>
+    <path class="lily__petal" pathLength="1" style="--i:6" d="M64 168 C 68 138, 82 104, 102 82"/>
+    <path class="lily__spadix" pathLength="1" style="--i:7" d="M76 104 C 78 88, 83 75, 91 64"/>
+  </svg>`;
+
+  const draw = (inner, box = 48) => `<svg class="draw" viewBox="0 0 ${box} ${box}" aria-hidden="true">${inner}</svg>`;
   const ICONS = {
-    rings: `<svg class="draw" viewBox="0 0 48 48" aria-hidden="true"><circle pathLength="1" cx="18" cy="30" r="12"/><circle pathLength="1" style="--i:1" cx="30" cy="30" r="12"/><path pathLength="1" style="--i:2" d="M24 4 l5 5 -5 7 -5 -7 z"/></svg>`,
-    glass: `<svg class="draw" viewBox="0 0 48 48" aria-hidden="true"><g transform="rotate(-12 16 24)"><path pathLength="1" d="M10 8 h11 l-1.2 13 a4.3 4.3 0 0 1 -8.6 0 z"/><path pathLength="1" style="--i:1" d="M15.5 25.5 V41 M11 41 h9"/></g><g transform="rotate(12 32 24)"><path pathLength="1" style="--i:1" d="M27 8 h11 l-1.2 13 a4.3 4.3 0 0 1 -8.6 0 z"/><path pathLength="1" style="--i:2" d="M32.5 25.5 V41 M28 41 h9"/></g><path pathLength="1" style="--i:3" d="M24 1 v4 M18 3 l2 3 M30 3 l-2 3"/></svg>`,
-    pin: `<svg class="draw" viewBox="0 0 48 48" aria-hidden="true"><path pathLength="1" d="M24 44 C 24 44, 10 31, 10 20 a14 14 0 0 1 28 0 C 38 31, 24 44, 24 44 z"/><circle pathLength="1" style="--i:1" cx="24" cy="20" r="5"/></svg>`,
-    bed: `<svg class="draw" viewBox="0 0 48 48" aria-hidden="true"><path pathLength="1" d="M5 10 V40 M5 32 H43 V40 M5 26 H43 V32"/><path pathLength="1" style="--i:1" d="M10 26 V21 a3 3 0 0 1 3 -3 H22 a3 3 0 0 1 3 3 V26"/></svg>`,
-    car: `<svg class="draw" viewBox="0 0 48 48" aria-hidden="true"><path pathLength="1" d="M6 32 V24 L12 14 H36 L42 24 V32 Z M6 24 H42"/><circle pathLength="1" style="--i:1" cx="14" cy="33" r="4"/><circle pathLength="1" style="--i:1" cx="34" cy="33" r="4"/></svg>`,
-    arrow: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>`
+    church: draw(`<path pathLength="1" d="M24 3 V11 M20.5 6.5 H27.5"/><path pathLength="1" style="--i:1" d="M16 23 L24 13 L32 23 M18 21 V44 M30 21 V44"/><path pathLength="1" style="--i:2" d="M18 31 L8 35 V44 H40 V35 L30 31"/><path pathLength="1" style="--i:3" d="M21 44 V38 a3 3 0 0 1 6 0 V44"/><circle pathLength="1" style="--i:3" cx="24" cy="28" r="2.5"/>`),
+    rings: draw(`<circle pathLength="1" cx="18" cy="31" r="11"/><circle pathLength="1" style="--i:1" cx="30" cy="29" r="11"/><path pathLength="1" style="--i:2" d="M25 12 L28 8 H32 L35 12 L30 18 Z M25 12 H35"/>`),
+    glass: draw(`<g transform="rotate(-12 16 24)"><path pathLength="1" d="M10 8 h11 l-1.2 13 a4.3 4.3 0 0 1 -8.6 0 z"/><path pathLength="1" style="--i:1" d="M15.5 25.5 V41 M11 41 h9"/></g><g transform="rotate(12 32 24)"><path pathLength="1" style="--i:1" d="M27 8 h11 l-1.2 13 a4.3 4.3 0 0 1 -8.6 0 z"/><path pathLength="1" style="--i:2" d="M32.5 25.5 V41 M28 41 h9"/></g><path pathLength="1" style="--i:3" d="M24 1 v4 M18 3 l2 3 M30 3 l-2 3"/>`),
+    car: draw(`<path pathLength="1" d="M17 33 H31 M39 33 H43 V27 C 43 25, 42 24, 40 24 L36 23 L31 15 H17 L12 23 L8 24 C 6 24, 5 25, 5 27 V33 H9"/><circle pathLength="1" style="--i:1" cx="13" cy="33" r="4"/><circle pathLength="1" style="--i:1" cx="35" cy="33" r="4"/><path pathLength="1" style="--i:2" d="M24 15 V23 M12 23 H36"/><path pathLength="1" style="--i:3" d="M5 30 C 2 30, 0 32, -2 35 M5 31 C 3 33, 3 36, 1 39"/>`),
+    pin: draw(`<path pathLength="1" d="M24 44 C 24 44, 10 31, 10 20 a14 14 0 0 1 28 0 C 38 31, 24 44, 24 44 z"/><circle pathLength="1" style="--i:1" cx="24" cy="20" r="5"/>`),
+    parking: draw(`<rect pathLength="1" x="8" y="8" width="32" height="32" rx="8"/><path pathLength="1" style="--i:1" d="M19 34 V14 h7 a6 6 0 0 1 0 12 h-7"/>`),
+    landmark: draw(`<path pathLength="1" d="M24 4 L31 14 H17 Z"/><path pathLength="1" style="--i:1" d="M19 14 V40 M29 14 V40 M12 44 H36 M15 40 H33"/>`),
+    route: draw(`<circle pathLength="1" cx="12" cy="36" r="4"/><circle pathLength="1" style="--i:1" cx="36" cy="12" r="4"/><path pathLength="1" style="--i:1" d="M16 36 H30 a6 6 0 0 0 0 -12 H18 a6 6 0 0 1 0 -12 H32"/>`),
+    camera: draw(`<path pathLength="1" d="M6 16 a4 4 0 0 1 4 -4 h6 l3 -4 h10 l3 4 h6 a4 4 0 0 1 4 4 v20 a4 4 0 0 1 -4 4 H10 a4 4 0 0 1 -4 -4 Z"/><circle pathLength="1" style="--i:1" cx="24" cy="26" r="8"/>`),
+    gift: draw(`<rect pathLength="1" x="7" y="18" width="34" height="8" rx="1"/><path pathLength="1" style="--i:1" d="M10 26 V42 H38 V26 M24 18 V42"/><path pathLength="1" style="--i:2" d="M24 18 C 18 18, 12 16, 13 11 C 14 6, 21 9, 24 18 C 27 9, 34 6, 35 11 C 36 16, 30 18, 24 18"/>`)
+  };
+  const I = {
+    pin: `<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>`,
+    phone: `<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h3l2 5-2.5 1.5a11 11 0 0 0 7 7L16 14l5 2v3a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2"/></svg>`,
+    sms: `<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4V6a1 1 0 0 1 1-1z"/><path d="M8 10h8M8 13h5"/></svg>`,
+    messenger: `<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3C7 3 3 6.7 3 11.3c0 2.6 1.3 4.9 3.3 6.4V21l3-1.7c.9.3 1.8.4 2.7.4 5 0 9-3.7 9-8.4S17 3 12 3z"/><path d="M7.5 13.5l3-3 2.5 2 3.5-3"/></svg>`,
+    camera: `<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h2.5L9 4h6l1.5 2H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>`,
+    copy: `<svg class="i i--copy" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg>`,
+    check: `<svg class="i i--check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`
   };
 
-  const PH_COLORS = [["#EFE3D3", "#E3CFC3"], ["#E6E9DD", "#CBD4BF"], ["#F2E6DC", "#E6CBBF"], ["#EEE6D6", "#DBC8A8"]];
-  // Photo or a soft placeholder when no photo is set yet.
-  function media(src, alt, i) {
-    if (src) return `<img src="${esc(src)}" alt="${esc(alt)}" loading="lazy" decoding="async">`;
-    const [a, b] = PH_COLORS[i % PH_COLORS.length];
-    return `<span class="ph" style="--c1:${a};--c2:${b}" aria-hidden="true">${sprig()}<span class="ph__label">${esc(C.couple.monogram)}</span></span>`;
+  const monogramHTML = () => (isReal(C.couple.monogram) ? esc(C.couple.monogram) : HEART);
+
+  // A link button, or a dimmed "coming soon" button while the link is missing
+  const actionLink = (url, label, cls) => (isReal(url)
+    ? `<a class="${cls}" href="${esc(url)}" target="_blank" rel="noopener">${label}</a>`
+    : `<span class="${cls} is-pending" aria-disabled="true">${label}</span><span class="pending-note">Link coming soon</span>`);
+
+  function photo(src, alt, position) {
+    if (!isReal(src)) return `<span class="ph" aria-hidden="true">${LILY}</span>`;
+    return `<img src="${esc(src)}" alt="${esc(alt)}" loading="lazy" decoding="async"${position ? ` style="object-position:${esc(position)}"` : ""}>`;
   }
 
+  const hideSection = (id) => { const s = document.getElementById(id); if (s) s.hidden = true; };
+
   /* ---------- Render content from config ---------- */
+  let GALLERY = [];
+
   function render() {
+    const venue = C.venues[0] || {};
+    const venueLine = [venue.name, venue.address].filter(isReal).join(", ");
     const binds = {
       first: C.couple.first,
       second: C.couple.second,
-      monogram: C.couple.monogram,
       hashtag: C.couple.hashtag,
       namesShort: `${C.couple.first} & ${C.couple.second}`,
+      heroEyebrow: C.hero.eyebrow,
+      tagline: C.hero.tagline,
       displayDate: C.displayDate,
       shortDate: C.shortDate,
-      venue: C.venue,
-      city: C.city,
-      intro: C.intro,
-      dressCode: C.dressCode,
+      dateTime: `${C.displayDate} · ${C.displayTime}`,
+      weekday: C.dateParts.weekday,
+      time: C.dateParts.time,
+      day: C.dateParts.day,
+      month: C.dateParts.month,
+      year: C.dateParts.year,
+      venueLine,
+      venueName: venue.name,
+      venueAddress: venue.address,
+      welcomeQuote: C.welcome.quote,
+      storyEnding: C.storyEnding,
+      dressTitle: C.dressCode.title,
+      dressNote: C.dressCode.note,
+      dressThanks: C.dressCode.thanks,
       deadline: C.rsvp.deadline,
-      footerNote: C.footerNote
+      rsvpLead: C.rsvp.lead,
+      rsvpName: C.rsvp.contact ? C.rsvp.contact.name : "",
+      rsvpPhone: C.rsvp.contact ? formatPhone(C.rsvp.contact.phone) : "",
+      shareLead: C.sharePhotos.lead,
+      shareText: C.sharePhotos.text,
+      shareNote: C.sharePhotos.note,
+      contactLead: C.contact.lead,
+      closingTitle: C.closing.title,
+      closingText: C.closing.text,
+      closingRequest: C.closing.request
     };
     $$("[data-bind]").forEach((el) => {
       const v = binds[el.dataset.bind];
-      if (v != null) el.textContent = v;
+      if (v == null) return;
+      el.textContent = v;
+      if (!isReal(v)) el.hidden = true;
     });
-    document.title = `${C.couple.first} & ${C.couple.second} · ${C.displayDate}`;
-    $$("[data-sprig]").forEach((el) => { el.innerHTML = sprig(); });
+    $$("[data-monogram]").forEach((el) => { el.innerHTML = monogramHTML(); });
+    $$("[data-heart]").forEach((el) => { el.innerHTML = HEART; });
+    $$("[data-lily]").forEach((el) => { el.innerHTML = LILY; });
 
-    // Story
-    $("#timeline").insertAdjacentHTML("beforeend", C.story.map((s, i) => {
+    // Welcome photo
+    $("#welcome-photo").innerHTML = photo(C.welcome.photo, `${C.couple.first} and ${C.couple.second}`, C.welcome.photoPosition);
+
+    // Story: only moments that have real text
+    const story = C.story.filter((s) => isReal(s.title) && isReal(s.text));
+    if (!story.length) hideSection("story");
+    $("#timeline").insertAdjacentHTML("beforeend", story.map((s, i) => {
       const flip = i % 2 === 1;
       return `<article class="timeline__item${flip ? " is-flipped" : ""}">
         <span class="timeline__dot" aria-hidden="true"></span>
         <div class="timeline__text" data-reveal="${flip ? "right" : "left"}">
-          <p class="timeline__year">${esc(s.year)}</p>
+          ${isReal(s.label) ? `<p class="timeline__label">${esc(s.label)}</p>` : ""}
           <h3>${esc(s.title)}</h3>
           <p>${esc(s.text)}</p>
         </div>
-        <div class="timeline__media" data-reveal="${flip ? "left" : "right"}">${media(s.photo, s.title, i)}</div>
+        <div class="timeline__media" data-reveal="${flip ? "left" : "right"}">${photo(s.photo, s.title)}</div>
       </article>`;
     }).join(""));
 
-    // Events
-    $("#events").innerHTML = C.events.map((e) => `
-      <article class="event" data-reveal="up">
-        <div class="event__icon">${ICONS[e.icon] || ""}</div>
-        <p class="eyebrow">${esc(e.type)}</p>
-        <h3 class="event__time">${esc(e.time)}</h3>
-        <p class="event__venue">${esc(e.venue)}</p>
-        <p class="event__address">${esc(e.address)}</p>
-        <a class="link" href="${esc(e.mapUrl || mapsUrl(`${e.venue}, ${e.address}`))}" target="_blank" rel="noopener">Get directions ${ICONS.arrow}</a>
+    // The details
+    const moments = C.details.filter((m) => isReal(m.title) && isReal(m.time));
+    $("#moments").insertAdjacentHTML("beforeend", moments.map((m, i) => `
+      <li class="moment${i % 2 ? " is-flipped" : ""}" data-reveal="up">
+        <span class="moment__icon">${ICONS[m.icon] || ""}</span>
+        <span class="moment__dot" aria-hidden="true"></span>
+        <div class="moment__text"><h3>${esc(m.title)}</h3><p>${esc(m.time)}</p></div>
+      </li>`).join(""));
+    if (!moments.length) $("#moments").hidden = true;
+
+    const venues = C.venues.filter((v) => isReal(v.name));
+    const venueMap = (v) => (isReal(v.mapUrl) ? v.mapUrl : mapsUrl(`${v.name}, ${v.address}`));
+    $("#venue-cards").innerHTML = venues.map((v) => `
+      <article class="venue-card" data-reveal="up">
+        <div class="venue-card__icon">${ICONS.pin}</div>
+        <p class="eyebrow">${esc(v.label)}</p>
+        <h3>${esc(v.name)}</h3>
+        ${isReal(v.address) ? `<p class="venue-card__address">${esc(v.address)}</p>` : ""}
+        <a class="btn btn--solid" href="${esc(venueMap(v))}" target="_blank" rel="noopener">${I.pin} View location</a>
       </article>`).join("");
 
-    // Schedule
-    $("#schedule").innerHTML = C.schedule.map((s) => `
-      <li class="schedule__item" data-reveal="up">
-        <span class="schedule__time">${esc(s.time)}</span>
-        <div><h4>${esc(s.title)}</h4><p>${esc(s.note)}</p></div>
-      </li>`).join("");
+    // Dress code
+    const [c1, c2] = C.dressCode.colors;
+    $("#palette").innerHTML = C.dressCode.colors.map((c) => `<div class="palette__block" style="--c:${esc(c.hex)};--fg:${esc(c.text)}">${esc(c.name)}</div>`).join("")
+      + (c1 && c2 ? `<span class="palette__plus" aria-hidden="true">+</span>` : "");
 
-    $("#swatches").innerHTML = C.palette.map((c, i) => `<span class="swatch" style="--c:${esc(c)};--i:${i}"></span>`).join("");
+    // Location
+    if (!venues.length) hideSection("location");
+    $("#venues").classList.toggle("venues--single", venues.length === 1);
+    $("#venues").innerHTML = venues.map((v) => {
+      const query = isReal(v.coordinates) ? v.coordinates : `${v.name}, ${v.address}`;
+      const map = isReal(v.address) || isReal(v.coordinates)
+        ? `<iframe src="${esc(mapEmbed(query))}" title="Map of ${esc(v.name)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`
+        : "";
+      return `<article class="venue" data-reveal="up">
+        <div class="venue__map${map ? "" : " venue__map--empty"}">${map || `${ICONS.pin}<p>The map shows up once the address is in.</p>`}</div>
+        <div class="venue__body">
+          <p class="eyebrow">${esc(v.label)}</p>
+          <h3>${esc(v.name)}</h3>
+          ${isReal(v.address) ? `<p class="venue__address">${esc(v.address)}</p>` : ""}
+          <a class="btn btn--solid" href="${esc(venueMap(v))}" target="_blank" rel="noopener">${I.pin} View on Google Maps</a>
+        </div>
+      </article>`;
+    }).join("");
+    const tips = (C.location.tips || []).filter((t) => isReal(t.title) && isReal(t.text));
+    $("#tips").innerHTML = tips.map((t) => `
+      <div class="tip" data-reveal="up">
+        <span class="tip__icon">${ICONS[t.icon] || ICONS.pin}</span>
+        <div><h4>${esc(t.title)}</h4><p>${esc(t.text)}</p></div>
+      </div>`).join("");
+    if (!tips.length) $("#tips").hidden = true;
 
     // Gallery
-    $("#gallery-grid").innerHTML = C.gallery.map((g, i) => `
-      <button class="tile" type="button" data-reveal="clip" data-index="${i}" aria-label="Open photo: ${esc(g.caption || g.alt || `Photo ${i + 1}`)}">
-        <span class="tile__media">${media(g.src, g.alt || g.caption, i)}</span>
-        ${g.caption ? `<span class="tile__cap">${esc(g.caption)}</span>` : ""}
+    GALLERY = C.gallery.filter((g) => isReal(g.src));
+    if (!GALLERY.length) hideSection("gallery");
+    $("#gallery-grid").innerHTML = GALLERY.map((g, i) => `
+      <button class="tile${g.wide ? " tile--wide" : ""}" type="button" data-reveal="clip" data-index="${i}" aria-label="Open photo ${i + 1} of ${GALLERY.length}${g.alt ? `: ${esc(g.alt)}` : ""}">
+        <span class="tile__media">${photo(g.thumb || g.src, "", g.position)}</span>
+        ${isReal(g.caption) ? `<span class="tile__cap">${esc(g.caption)}</span>` : ""}
       </button>`).join("");
 
-    // Travel
-    $("#travel-grid").innerHTML = C.travel.map((t) => `
-      <article class="card" data-reveal="up">
-        <div class="card__icon">${ICONS[t.icon] || ""}</div>
-        <h3>${esc(t.title)}</h3>
-        <p>${esc(t.text)}</p>
-        ${t.list ? `<ul class="card__list">${t.list.map((l) => `
-          <li>
-            <span class="card__list-name">${l.url ? `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.name)}</a>` : esc(l.name)}</span>
-            <span class="card__list-note">${esc(l.note)}</span>
-          </li>`).join("")}</ul>` : ""}
-        ${(t.links || []).map((l) => `<a class="link" href="${esc(l.url || mapsUrl(`${C.venue}, ${C.city}`))}" target="_blank" rel="noopener">${esc(l.label)} ${ICONS.arrow}</a>`).join("")}
+    // Share your photos
+    if (!isReal(C.sharePhotos.url)) hideSection("share");
+    $("#share-icon").innerHTML = ICONS.camera;
+    $("#share-action").innerHTML = actionLink(C.sharePhotos.url, `${I.camera} Share your photos`, "btn btn--solid btn--lg");
+
+    // Gifts: drop rows that are still placeholders
+    const gifts = C.gifts.options
+      .map((g) => ({ ...g, details: g.details.filter((d) => isReal(d.value)) }))
+      .filter((g) => g.details.length || isReal(g.qr));
+    if (!gifts.length) hideSection("gifts");
+    $("#gifts-intro").innerHTML = C.gifts.intro.map((p) => `<p>${esc(p)}</p>`).join("");
+    $("#gift-list").innerHTML = gifts.map((g) => `
+      <article class="gift" data-reveal="up">
+        <div class="gift__head"><span class="gift__icon">${ICONS.gift}</span><h3>${esc(g.label)}</h3></div>
+        <dl class="gift__details">${g.details.map((d) => `
+          <div class="gift__row">
+            <dt>${esc(d.key)}</dt>
+            <dd><span>${esc(d.value)}</span>${d.copy ? `<button class="copy" type="button" data-copy="${esc(d.value)}" aria-label="Copy ${esc(d.key)}">${I.copy}${I.check}<span class="copy__label">Copy</span></button>` : ""}</dd>
+          </div>`).join("")}</dl>
+        ${isReal(g.qr) ? `<img class="gift__qr" src="${esc(g.qr)}" alt="${esc(g.label)} QR code" loading="lazy">` : ""}
       </article>`).join("");
 
+    // Contact
+    const people = C.contact.people.filter((p) => isReal(p.name) && isReal(p.phone));
+    const hasMessenger = isReal(C.contact.messengerUrl);
+    if (!people.length && !hasMessenger) hideSection("contact");
+    $("#contacts").innerHTML = people.map((p) => {
+      const d = digits(p.phone);
+      return `<article class="person" data-reveal="up">
+        <span class="person__avatar" aria-hidden="true">${esc(p.name.trim()[0])}</span>
+        <h3>${esc(p.name)}</h3>
+        ${isReal(p.role) ? `<p class="person__role">${esc(p.role)}</p>` : ""}
+        <p class="person__phone">${esc(formatPhone(p.phone))}</p>
+        <div class="person__actions">
+          <a class="btn btn--ghost btn--sm" href="tel:${d}">${I.phone} Call</a>
+          <a class="btn btn--ghost btn--sm" href="sms:${d}">${I.sms} Text</a>
+        </div>
+      </article>`;
+    }).join("");
+    $("#messenger").innerHTML = hasMessenger ? actionLink(C.contact.messengerUrl, `${I.messenger} Message us on Messenger`, "btn btn--solid") : "";
+
     // FAQ
-    $("#faq-list").innerHTML = C.faq.map((f, i) => `
+    const faq = C.faq.filter((f) => isReal(f.q) && isReal(f.a));
+    if (!faq.length) hideSection("faq");
+    $("#faq-list").innerHTML = faq.map((f, i) => `
       <div class="faq__item" data-reveal="up">
         <h3>
           <button class="faq__q" type="button" id="faq-q-${i}" aria-expanded="false" aria-controls="faq-a-${i}">
@@ -136,6 +262,12 @@
           <div><p>${esc(f.a.replace("{deadline}", C.rsvp.deadline))}</p></div>
         </div>
       </div>`).join("");
+
+    // Menu links to hidden sections go away too
+    $$("#nav-menu a").forEach((a) => {
+      const target = document.getElementById(a.getAttribute("href").slice(1));
+      if (!target || target.hidden) a.hidden = true;
+    });
 
     // Split section titles into words for the entrance effect
     $$("[data-split]").forEach((el) => {
@@ -149,7 +281,6 @@
   function setupIntro(onReveal) {
     const intro = $("#intro");
     const envelope = $("#envelope");
-    const btn = $("#open-invite");
     const main = $("#main");
     const nav = $("#nav");
     const skip = new URLSearchParams(location.search).has("nointro") || store.get("invite-opened");
@@ -185,7 +316,7 @@
         setTimeout(() => intro.remove(), 1200);
       }, reduceMotion ? 50 : 2300);
     };
-    btn.addEventListener("click", open);
+    $("#open-invite").addEventListener("click", open);
     envelope.addEventListener("click", open);
   }
 
@@ -194,7 +325,8 @@
     const canvas = $("#petals");
     if (reduceMotion || !canvas.getContext) return;
     const ctx = canvas.getContext("2d");
-    const colors = ["232,200,188", "216,188,142", "240,220,210", "205,170,160"];
+    // [rgb, max alpha]: burgundy, plum, beige, blush
+    const colors = [["92,21,38", 0.55], ["62,42,51", 0.4], ["209,179,145", 0.75], ["225,196,190", 0.8]];
     let w = 0, h = 0, raf = 0, petals = [], visible = true;
 
     const resize = () => {
@@ -205,22 +337,24 @@
       canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
-    const make = (anywhere, i) => ({
-      x: Math.random() * w,
-      y: anywhere ? Math.random() * h : -20 - Math.random() * 60,
-      size: 5 + Math.random() * 8,
-      vy: 0.35 + Math.random() * 0.75,
-      vx: -0.15 + Math.random() * 0.3,
-      rot: Math.random() * Math.PI * 2,
-      vr: (Math.random() - 0.5) * 0.03,
-      sway: Math.random() * Math.PI * 2,
-      swaySpeed: 0.008 + Math.random() * 0.018,
-      flip: Math.random() * Math.PI * 2,
-      color: colors[i % colors.length],
-      alpha: 0.45 + Math.random() * 0.4
-    });
-
-    const draw = (p) => {
+    const make = (anywhere, i) => {
+      const [rgb, max] = colors[i % colors.length];
+      return {
+        x: Math.random() * w,
+        y: anywhere ? Math.random() * h : -20 - Math.random() * 60,
+        size: 5 + Math.random() * 8,
+        vy: 0.35 + Math.random() * 0.7,
+        vx: -0.15 + Math.random() * 0.3,
+        rot: Math.random() * Math.PI * 2,
+        vr: (Math.random() - 0.5) * 0.03,
+        sway: Math.random() * Math.PI * 2,
+        swaySpeed: 0.008 + Math.random() * 0.018,
+        flip: Math.random() * Math.PI * 2,
+        rgb,
+        alpha: max * (0.55 + Math.random() * 0.45)
+      };
+    };
+    const paint = (p) => {
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(p.rot);
@@ -229,11 +363,10 @@
       ctx.moveTo(0, -p.size);
       ctx.bezierCurveTo(p.size * 0.9, -p.size * 0.6, p.size * 0.7, p.size * 0.7, 0, p.size);
       ctx.bezierCurveTo(-p.size * 0.7, p.size * 0.7, -p.size * 0.9, -p.size * 0.6, 0, -p.size);
-      ctx.fillStyle = `rgba(${p.color},${p.alpha})`;
+      ctx.fillStyle = `rgba(${p.rgb},${p.alpha})`;
       ctx.fill();
       ctx.restore();
     };
-
     const tick = () => {
       ctx.clearRect(0, 0, w, h);
       petals.forEach((p, i) => {
@@ -243,7 +376,7 @@
         p.y += p.vy;
         p.rot += p.vr;
         if (p.y > h + 20 || p.x < -40 || p.x > w + 40) petals[i] = make(false, i);
-        draw(petals[i]);
+        paint(petals[i]);
       });
       raf = requestAnimationFrame(tick);
     };
@@ -251,13 +384,12 @@
     const stop = () => { cancelAnimationFrame(raf); raf = 0; };
 
     resize();
-    const count = w < 700 ? 14 : 28;
-    petals = Array.from({ length: count }, (_, i) => make(true, i));
+    petals = Array.from({ length: w < 700 ? 14 : 26 }, (_, i) => make(true, i));
     window.addEventListener("resize", resize);
     document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
     new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
-      visible ? start() : stop();
+      if (visible) start(); else stop();
     }).observe(canvas);
     start();
   }
@@ -310,21 +442,20 @@
       lastY = y;
     }, { passive: true });
 
-    // highlight the section you're in
+    // underline the menu item for the section you're in
     const io = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
         links.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === `#${entry.target.id}`));
       });
     }, { rootMargin: "-45% 0px -50% 0px" });
-    $$("main section[id]").forEach((s) => io.observe(s));
+    $$("main section[id]").forEach((s) => { if (!s.hidden) io.observe(s); });
   }
 
-  /* ---------- Scroll effects: parallax, timeline fill, back to top ---------- */
+  /* ---------- Scroll effects: parallax, line fills, back to top ---------- */
   function setupScrollFx() {
     const parallax = $$("[data-parallax]");
-    const timeline = $("#timeline");
-    const fill = $("#timeline-fill");
+    const tracks = $$("[data-progress]").filter((el) => !el.closest("[hidden]"));
     const toTop = $("#to-top");
     const ring = $("#to-top-ring");
     let ticking = false;
@@ -336,10 +467,11 @@
       if (!reduceMotion && y < vh * 1.3) {
         parallax.forEach((el) => { el.style.transform = `translate3d(0, ${(y * parseFloat(el.dataset.parallax)).toFixed(1)}px, 0)`; });
       }
-      const r = timeline.getBoundingClientRect();
-      const p = Math.min(1, Math.max(0, (vh * 0.62 - r.top) / r.height));
-      fill.style.setProperty("--p", p.toFixed(4));
-
+      tracks.forEach((el) => {
+        const r = el.getBoundingClientRect();
+        const p = Math.min(1, Math.max(0, (vh * 0.62 - r.top) / r.height));
+        $(".progress-fill", el).style.setProperty("--p", p.toFixed(4));
+      });
       const max = document.documentElement.scrollHeight - vh;
       toTop.classList.toggle("is-shown", y > vh * 0.9);
       ring.style.strokeDashoffset = String(1 - (max > 0 ? y / max : 0));
@@ -405,10 +537,11 @@
     const start = new Date(C.start);
     const end = new Date(C.end);
     const stamp = (d) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+    const venue = C.venues[0] || {};
     const title = `${C.couple.first} & ${C.couple.second}'s Wedding`;
-    const place = `${C.venue}, ${C.city}`;
+    const place = [venue.name, venue.address].filter(isReal).join(", ");
     const pageUrl = location.href.split(/[?#]/)[0];
-    const details = `We can't wait to celebrate with you. Details and RSVP: ${pageUrl}`;
+    const details = `Details and directions: ${pageUrl}`;
 
     const google = new URL("https://calendar.google.com/calendar/render");
     google.search = new URLSearchParams({ action: "TEMPLATE", text: title, dates: `${stamp(start)}/${stamp(end)}`, details, location: place }).toString();
@@ -429,7 +562,7 @@
         "END:VEVENT", "END:VCALENDAR"
       ].join("\r\n");
       const url = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
-      const a = Object.assign(document.createElement("a"), { href: url, download: "wedding.ics" });
+      const a = Object.assign(document.createElement("a"), { href: url, download: "nicole-and-lemuel-wedding.ics" });
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -449,23 +582,48 @@
     });
   }
 
+  /* ---------- Copy buttons (gift details) ---------- */
+  function setupCopy() {
+    document.addEventListener("click", async (e) => {
+      const btn = e.target.closest("[data-copy]");
+      if (!btn) return;
+      const text = btn.dataset.copy;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const ta = Object.assign(document.createElement("textarea"), { value: text });
+        ta.style.cssText = "position:fixed;opacity:0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+      }
+      const label = $(".copy__label", btn);
+      btn.classList.add("is-copied");
+      label.textContent = "Copied";
+      clearTimeout(btn._t);
+      btn._t = setTimeout(() => { btn.classList.remove("is-copied"); label.textContent = "Copy"; }, 1800);
+    });
+  }
+
   /* ---------- Gallery lightbox ---------- */
   function setupLightbox() {
+    if (!GALLERY.length) return;
     const lb = $("#lightbox");
     const mediaEl = $("#lightbox-media");
     const caption = $("#lightbox-caption");
     const count = $("#lightbox-count");
     const closeBtn = $(".lightbox__close", lb);
-    const total = C.gallery.length;
+    const total = GALLERY.length;
     let index = 0;
     let lastFocus = null;
 
     const paint = () => {
-      const g = C.gallery[index];
-      mediaEl.innerHTML = media(g.src, g.alt || g.caption, index);
-      mediaEl.classList.toggle("is-ph", !g.src);
-      caption.textContent = g.caption || "";
+      const g = GALLERY[index];
+      mediaEl.innerHTML = `<img src="${esc(g.src)}" alt="${esc(g.alt)}">`;
+      caption.textContent = isReal(g.caption) ? g.caption : "";
       count.textContent = `${index + 1} / ${total}`;
+      new Image().src = GALLERY[(index + 1) % total].src; // warm up the next one
     };
     const go = (step) => {
       index = (index + step + total) % total;
@@ -532,6 +690,25 @@
 
   /* ---------- RSVP ---------- */
   function setupRsvp() {
+    const r = C.rsvp;
+    if (isReal(r.googleFormUrl)) {
+      $("#rsvp-external").hidden = false;
+      $("#rsvp-external-link").href = r.googleFormUrl;
+    } else if (isReal(r.endpoint)) {
+      $("#rsvp-form").hidden = false;
+      setupRsvpForm();
+    } else if (r.contact && isReal(r.contact.phone)) {
+      const d = digits(r.contact.phone);
+      $("#rsvp-contact").hidden = false;
+      // "?&body=" works for both iPhone and Android messaging apps
+      $("#rsvp-sms").href = `sms:${d}?&body=${encodeURIComponent(r.smsMessage || "")}`;
+      $("#rsvp-call").href = `tel:${d}`;
+    } else {
+      hideSection("rsvp");
+    }
+  }
+
+  function setupRsvpForm() {
     const form = $("#rsvp-form");
     const more = $("#rsvp-more");
     const status = $("#form-status");
@@ -540,13 +717,6 @@
 
     const guests = $("#f-guests");
     for (let n = 1; n <= C.rsvp.maxGuests; n++) guests.add(new Option(n === 1 ? "Just me" : `${n} people`, String(n)));
-    const meal = $("#f-meal");
-    if (C.rsvp.meals && C.rsvp.meals.length) {
-      meal.add(new Option("Choose one", ""));
-      C.rsvp.meals.forEach((m) => meal.add(new Option(m, m)));
-    } else {
-      $("#meal-field").hidden = true;
-    }
 
     const setError = (name, msg) => {
       const field = $(`[data-field="${name}"]`, form);
@@ -556,10 +726,10 @@
     };
     const check = () => {
       const data = new FormData(form);
-      const email = String(data.get("email") || "").trim();
+      const phone = String(data.get("phone") || "").trim();
       const errors = {
         name: String(data.get("name") || "").trim() ? "" : "Please add your name.",
-        email: !email ? "Please add your email." : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? "" : "That email doesn't look quite right.",
+        phone: !phone ? "Please add a number we can reach you on." : digits(phone).length < 7 ? "That number looks too short." : "",
         attending: data.get("attending") ? "" : "Let us know if you can make it."
       };
       Object.entries(errors).forEach(([k, v]) => setError(k, v));
@@ -593,21 +763,17 @@
       const data = Object.fromEntries(new FormData(form).entries());
       const isBot = Boolean(data.website);
       delete data.website;
-      if (data.attending !== "yes") ["guests", "meal", "dietary", "song"].forEach((k) => delete data[k]);
+      if (data.attending !== "yes") ["guests", "dietary"].forEach((k) => delete data[k]);
       data.submittedAt = new Date().toISOString();
 
       submit.classList.add("is-loading");
       submit.disabled = true;
-      const preview = !C.rsvp.endpoint;
       try {
-        if (preview || isBot) {
-          await wait(1000);
-        } else {
-          // no-cors works with a Google Apps Script web app. The response is opaque, so a
-          // network failure throws and anything else counts as sent.
-          await fetch(C.rsvp.endpoint, { method: "POST", mode: "no-cors", body: new URLSearchParams(data) });
-        }
-        showThanks(data, preview);
+        if (isBot) await wait(1000);
+        // no-cors works with a Google Apps Script web app. The response is opaque, so a
+        // network failure throws and anything else counts as sent.
+        else await fetch(C.rsvp.endpoint, { method: "POST", mode: "no-cors", body: new URLSearchParams(data) });
+        showThanks(data);
       } catch {
         status.textContent = "Something went wrong sending your RSVP. Please check your connection and try again.";
       } finally {
@@ -616,14 +782,13 @@
       }
     });
 
-    const showThanks = (data, preview) => {
+    const showThanks = (data) => {
       const firstName = data.name.trim().split(/\s+/)[0];
       const coming = data.attending === "yes";
       $("#thanks-title").textContent = coming ? `See you there, ${firstName}!` : `We'll miss you, ${firstName}`;
       $("#thanks-text").textContent = coming
         ? `Your RSVP is in. We can't wait to celebrate with you on ${C.displayDate}.`
         : "Thank you for letting us know. You'll be with us in spirit.";
-      $("#thanks-note").hidden = !preview;
       form.classList.add("is-leaving");
       setTimeout(() => {
         form.hidden = true;
@@ -651,7 +816,7 @@
   // little shower of petals when someone says yes
   function burst(host) {
     if (reduceMotion || !Element.prototype.animate) return;
-    const colors = ["#E8C8BC", "#B08D57", "#7D8C6F", "#D9A99A", "#D8BC8E"];
+    const colors = ["#5C1526", "#D1B391", "#E1C4BE", "#3E2A33", "#E0C9A8"];
     for (let i = 0; i < 38; i++) {
       const piece = document.createElement("span");
       piece.className = "confetti";
@@ -676,6 +841,7 @@
   setupCountdown();
   setupCalendar();
   setupFaq();
+  setupCopy();
   setupLightbox();
   setupRsvp();
   setupIntro(() => {
